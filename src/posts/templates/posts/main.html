@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}main page{% endblock title %}
+
+<!--  start -:- page content -->
+{% block content %}
+
+
+<div class="ui grid">
+    <div class="row">
+        <div class="eleven wide column">
+        {% for obj in qs %}
+            <div class="ui fluid card">
+                <div class="content">
+                    {{ obj.content }}
+                </div>
+                <div class="content">
+                    <form action="{% url 'posts:like-post-view' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value={{ obj.id }}>
+                        <button type="submit" class="ui primary button">
+                            {% if profile not in obj.liked.all %}
+                                <i class="thumbs up icon"></i>&nbsp;Like
+                            {% else %}
+                                <i class="thumbs down icon"></i>&nbsp;Unlike
+                            {% endif %}
+                        </button>
+                        &nbsp;{{ obj.num_likes }}
+                    </form>
+                </div>
+
+                <!-- start -:- Comment List -->
+                <div>
+                {% if obj.comment_set.all %}
+                    <!-- reverse relationship -->    
+                    {% for c in obj.comment_set.all %}
+                   
+                        <p>{{ c.body }}</p>
+                    
+                    {% endfor %}   
+                {% endif %}     
+                </div>
+                <!-- end -:- Comment List -->    
+
+
+                <!-- start -:- Comment From -->
+                <form action="" method="POST"class='ui fluid form'>
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value={{ obj.id }}>
+                    {{ c_form }}
+                    <button type="submit" name="submit_c_form" class="ui primary button mt-5 w-full">Comment</button>
+                </form>
+                <!-- end -:- Comment From -->   
+            </div>
+        {% endfor %}
+        </div>
+        <div class="five wide column">
+            {% if post_added %}
+                <div class="ui green message">Post added</div>
+            {% endif %}
+            <!-- start -:- Post From -->
+            <form action="" method="POST" class='ui form' enctype="multipart/form-data">
+                {% csrf_token %}
+                {{p_form}}
+                <button type='submit' name="submit_p_form" class="ui positive button w-full mt-5">Send</button>
+            </form>
+            <!-- end -:- Post From -->
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+<!--  end -:- page content -->
+
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        console.log('Working On [post/main.html]...');
+    });// end -:- document ready
+</script>
+{% endblock scripts %}
