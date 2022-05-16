@@ -34,4 +34,21 @@ def invites_received_view(request):
         #'is_empty': is_empty,
     }
     return render(request, 'profiles/my_invites.html', context)
- # End -:- invites_received_view     
+ # End -:- invites_received_view
+
+
+
+def profiles_list_view(request):
+    user = request.user
+    qs = Profile.objects.get_all_profiles(user)
+    context = {'qs': qs}
+    return render(request, 'profiles/profile_list.html', context)
+# end -:- profiles_list_view()
+
+
+def invite_profiles_list_view(request):
+    user = request.user
+    qs = Profile.objects.get_all_profiles_to_invite(user)
+    context = {'qs': qs}
+    return render(request, 'profiles/to_invite_list.html', context)
+# end -:- invite_profiles_list_view()  
