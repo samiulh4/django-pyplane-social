@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import Profile,Relationship
 from .forms import ProfileModelForm
+from django.views.generic import ListView
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -36,7 +38,12 @@ def invites_received_view(request):
     return render(request, 'profiles/my_invites.html', context)
  # End -:- invites_received_view
 
-
+def invite_profiles_list_view(request):
+    user = request.user
+    qs = Profile.objects.get_all_profiles_to_invite(user)
+    context = {'qs': qs}
+    return render(request, 'profiles/to_invite_list.html', context)
+# end -:- invite_profiles_list_view()  
 
 def profiles_list_view(request):
     user = request.user
@@ -45,10 +52,16 @@ def profiles_list_view(request):
     return render(request, 'profiles/profile_list.html', context)
 # end -:- profiles_list_view()
 
+class ProfileListView(ListView):
+    model = Profile
+    template_name = 'profiles/profile_list.html'
+    #context_object_name = 'qs'
 
-def invite_profiles_list_view(request):
-    user = request.user
-    qs = Profile.objects.get_all_profiles_to_invite(user)
-    context = {'qs': qs}
-    return render(request, 'profiles/to_invite_list.html', context)
-# end -:- invite_profiles_list_view()  
+    def get_queryset(self):
+        qs = Profile.objects.get_all_profiles(self.request.user)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context    
+# end -:- ProfileListView()    
